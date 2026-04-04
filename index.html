@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paws & Hearts - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">Dashboard</a> | 
+        <a href="addpet.html">Add Pet</a>
+    </nav>
+
+    <h1>Recent Pets</h1>
+    <p>Total Pets: <span id="totalCount">0</span></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Breed</th>
+            </tr>
+        </thead>
+        <tbody id="petsTableBody"></tbody>
+    </table>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
