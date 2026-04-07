@@ -1,34 +1,76 @@
 import { petService } from './PetService.js';
 
 const tableBody = document.getElementById('petsTableBody');
-const totalCountEl = document.getElementById('totalCount');
+const editModal = document.getElementById('editModal');
 
-const renderDashboard = async () => {
+const render = async () => {
     const pets = await petService.fetchAll();
+    const totalCount = document.getElementById('totalCount');
+    if (totalCount) totalCount.innerText = pets.length;
 
-    if (totalCountEl) {
-        totalCountEl.innerText = pets.length;
+    if (!tableBody) return;
+    tableBody.innerHTML = ''; 
+
+    if (pets.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pets added yet.</td></tr>';
+        return;
     }
 
-    if (tableBody) {
-        tableBody.innerHTML = '';
+    pets.forEach((pet, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${pet.name}</td>
+            <td>${pet.type}</td>
+            <td>${pet.breed}</td>
+            <td>${pet.age}</td>
+            <td>${pet.description}</td>
+            <td style="text-align: center;">
+                <button class="action-btn edit-btn">Edit</button>
+                <button class="action-btn delete-btn">Delete</button>
+            </td>
+        `;
 
-        if (pets.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="3">No pets added yet.</td></tr>';
-            return;
-        }
+        // Attach Delete Logic
+        row.querySelector('.delete-btn').onclick = async () => {
+            if (confirm(`Delete ${pet.name}?`)) {
+                await petService.delete(index);
+                render(); 
+            }
+        };
 
-        pets.forEach(pet => {
-            const row = `
-                <tr>
-                    <td>${pet.name}</td>
-                    <td>${pet.type}</td>
-                    <td>${pet.breed}</td>
-                </tr>
-            `;
-            tableBody.insertAdjacentHTML('beforeend', row);
-        });
-    }
+        // Attach Edit Logic
+        row.querySelector('.edit-btn').onclick = () => {
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editName').value = pet.name;
+            document.getElementById('editType').value = pet.type;
+            document.getElementById('editBreed').value = pet.breed;
+            document.getElementById('editAge').value = pet.age;
+            document.getElementById('editDesc').value = pet.description;
+            editModal.style.display = 'flex';
+        };
+
+        tableBody.appendChild(row);
+    });
 };
 
-document.addEventListener('DOMContentLoaded', renderDashboard);
+// Handle Save in Modal
+document.getElementById('saveBtn')?.addEventListener('click', async () => {
+    const index = document.getElementById('editIndex').value;
+    const updatedData = {
+        name: document.getElementById('editName').value,
+        type: document.getElementById('editType').value,
+        breed: document.getElementById('editBreed').value,
+        age: document.getElementById('editAge').value,
+        description: document.getElementById('editDesc').value
+    };
+
+    await petService.update(index, updatedData);
+    editModal.style.display = 'none';
+    render();
+});
+
+document.getElementById('cancelBtn')?.addEventListener('click', () => {
+    editModal.style.display = 'none';
+});
+
+document.addEventListener('DOMContentLoaded', render);
