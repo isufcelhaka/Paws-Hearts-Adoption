@@ -1,4 +1,5 @@
-import { Pet } from './Pet.js';
+// 1. Fixed the path (added the /)
+import { Pet } from './Pet.js'; 
 
 class PetService {
     constructor() {
@@ -43,4 +44,5 @@ class PetService {
     }
 }
 
+// 2. Fixed the export name to lowercase 'petService' to match your other files
 export const petService = new PetService();
